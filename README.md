@@ -1,4 +1,4 @@
-# Arwork generation based on Sketches
+# Artwork generation based on Sketches
 
 ## Prerequisites
 
@@ -8,7 +8,7 @@
 
 ## Installation
 
-1. On Linux, run `install_requirements.sh`, this will install miniconda with python 3.7 and create a new conda environmet (taming) for this repo.
+1. On Linux, run `install_requirements.sh`, this will install miniconda with Python 3.7 and create a new conda environment (taming) for this repo.
 
 ## Training on custom data
 
