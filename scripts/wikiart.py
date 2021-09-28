@@ -1,3 +1,7 @@
+'''
+    Script for the processing of the wikiart dataset
+'''
+
 import os, shutil
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -41,7 +45,7 @@ if validation_ratio != None:
 else:
     print(train.info(),test.info())
 
-#! Folder must exist
-# copyimgs(train, "train")
-# copyimgs(test, "test")
-# copyimgs(val, "val")
+# !!!Folder must exist
+copyimgs(train, "train")
+copyimgs(test, "test")
+copyimgs(val, "val")

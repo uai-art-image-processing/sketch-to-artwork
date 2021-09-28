@@ -6,7 +6,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
 #%%
 def imshow(img, cmap=None, figsize=(10,10)):
     plt.figure(figsize=figsize)
@@ -21,7 +20,7 @@ def imshowpair(img1, img2, figsize=(12,7)):
     plt.title('Edge Image'), plt.xticks([]), plt.yticks([])
     plt.show()
 
-def CannyThreshold(img, low_threshold=75, ratio=3, ksize=3):
+def CannyThreshold(img, low_threshold=75, upper_threshold=180):
     '''
         Canny Edge Detection
         
@@ -31,9 +30,10 @@ def CannyThreshold(img, low_threshold=75, ratio=3, ksize=3):
             -
     '''
     imgray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    img_blur = cv2.GaussianBlur(imgray, (7,7), 0)
-    edges = cv2.Canny(img_blur, low_threshold, low_threshold*ratio, ksize)
+    img_blur = cv2.GaussianBlur(imgray, (5,5), 0)
+    edges = cv2.Canny(img_blur, low_threshold, upper_threshold)
     # ret, thresh = cv2.threshold(edges, 200, 255, cv2.THRESH_BINARY)
+    # at last, swap blacks and whites
     return np.where(edges != 0, 0, 255)
 
 def ContourDetector(img, method="tresh", convexhull=False):
@@ -84,7 +84,7 @@ def Laplace(img):
 
 def main():
     # load testing dataset
-    genre_train = pd.read_csv("../dataset/wikiart_csv/genre_train.csv", delimiter=",", names=["path", "genre"])
+    genre_train = pd.read_csv("../data/wikiart_csv/genre_train.csv", delimiter=",", names=["path", "genre"])
     
     # Load first portrair image for testing
     img = cv2.imread(os.path.join("../dataset/wikiart/", genre_train[genre_train.genre == 6].path.values[1]))
