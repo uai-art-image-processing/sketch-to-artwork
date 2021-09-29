@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Linux or macOS
-- NVIDIA GPU with at least 12GB VRAM
+- NVIDIA GPU with at least 12GB VRAM and cuDNN
 - Python 3.7 or higher
 
 ## Installation
@@ -28,7 +28,7 @@
 
 ### Wikiart
 
-1. Run `scripts/wikiart-edges.sh` to download and preprocess the dataset
+1. Run `bash scripts/wikiart.sh` to download and preprocess the dataset
 2. Run `python main.py --base configs/wikiart_vqgan.yaml -t True --gpus 0,`
 3. Run `python main.py --base configs/wikiart_edges_vqgan.yaml -t True --gpus 0,`
 4. Run `python main.py --base configs/wikiart_edges_transformer.yaml -t True --gpus 0,`

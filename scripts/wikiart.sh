@@ -18,20 +18,19 @@ mkdir -p {train,test,val}
 python ../../scripts/wikiart.py 
 
 # Process the edge images
-mkdir -p edges/{train,test,val}
-python ../scripts/wikiart-edges.py -s train -d edges/train 
-python ../scripts/wikiart-edges.py -s test -d edges/test 
-python ../scripts/wikiart-edges.py -s val -d edges/val 
-
 cd ..
+mkdir -p wikiart_edges/{train,test,val}
+python ../scripts/wikiart-edges.py -s wikiart/train -d wikiart_edges/train 
+python ../scripts/wikiart-edges.py -s wikiart/test -d wikiart_edges/test 
+python ../scripts/wikiart-edges.py -s wikiart/val -d wikiart_edges/val 
 
 find $(pwd)/wikiart/train -name "*.jpg" > wikiart_train.txt
 find $(pwd)/wikiart/test -name "*.jpg" > wikiart_test.txt
 find $(pwd)/wikiart/val -name "*.jpg" > wikiart_val.txt
 
-find $(pwd)/wikiart/edges/train -name "*.jpg" > wikiart_edges_train.txt
-find $(pwd)/wikiart/edges/test -name "*.jpg" > wikiart_edges_test.txt
-find $(pwd)/wikiart/edges/val -name "*.jpg" > wikiart_edges_val.txt
+find $(pwd)/wikiart_edges/train -name "*.jpg" > wikiart_edges_train.txt
+find $(pwd)/wikiart_edges/test -name "*.jpg" > wikiart_edges_test.txt
+find $(pwd)/wikiart_edges/val -name "*.jpg" > wikiart_edges_val.txt
 
 echo "Done"
 exit 0

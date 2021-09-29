@@ -6,7 +6,7 @@ import os, shutil
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-SRC_PATH="wikiart/"
+SRC_PATH=""
 FILE="genre"
 COND="portrait"
 
@@ -46,6 +46,12 @@ else:
     print(train.info(),test.info())
 
 # !!!Folder must exist
+print("Starting dataset splitting...")
 copyimgs(train, "train")
+print("Train Split Done")
 copyimgs(test, "test")
+print("Test Split Done")
 copyimgs(val, "val")
+print("Validation Split Done")
+
+print("Done splitting dataset")
