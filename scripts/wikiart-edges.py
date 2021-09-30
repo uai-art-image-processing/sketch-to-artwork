@@ -18,25 +18,28 @@ def CannyThreshold(filename, low_threshold=75, upper_threshold=250):
     return np.where(edges != 0, 0, 255)
 
 def procesDir(src, dst, verbose):
-    if verbose: print("")
     dst = os.path.join(os.getcwd(), dst)
     src = os.path.join(os.getcwd(), src)
 
     for dirpath, dirnames, filenames in os.walk(src):
-        for filename in filenames:
+        for idx, filename in enumerate(filenames):
             fullpath = os.path.join(dirpath, filename)
-            if verbose: print("processing " + filename, end= "...")
-            # Try applying edge detection algo
+            if verbose: print("Processing " + filename, end= "...")
+            
             try:
+                # Try applying edge detection algo
                 edge = CannyThreshold(fullpath)
+                # Write new image
+                cv2.imwrite(os.path.join(dst, filename), edge)
             except:
                 if verbose: print("Failed to process image")
                 break
-            # Write new image
-            cv2.imwrite(os.path.join(dst, filename), edge)
+            
+            if not verbose: print("\r", f"Processed {(idx+1)/len(filenames)*100:.1f}%", end="", sep="")
             if verbose: print("Succeded")
             
-    print("Done")
+            
+    print("\nDone")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -46,7 +49,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.source is not None and args.destiny is not None:
-        print("Processing images", end="...")
+        print("Processing images...")
         procesDir(args.source, args.destiny, args.verbose)
     else:
         raise Exception("Not enough arguments")

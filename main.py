@@ -1,7 +1,7 @@
 import argparse, os, sys, datetime, glob, importlib
 from omegaconf import OmegaConf
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFile
 import torch
 import torchvision
 from torch.utils.data import random_split, DataLoader, Dataset
@@ -355,6 +355,9 @@ if __name__ == "__main__":
     #           target: importpath
     #           params:
     #               key: value
+    
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
+    
 
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
 
