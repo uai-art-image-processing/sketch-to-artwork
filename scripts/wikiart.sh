@@ -15,7 +15,7 @@ unzip wikiart_csv.zip
 
 # Prepare train
 mkdir -p {train,test,val}
-python ../../scripts/wikiart.py 
+python ../../scripts/get_wikiart.py 
 
 # Process the edge images
 cd ..
