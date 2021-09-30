@@ -5,12 +5,12 @@ mkdir -p data
 cd data
 
 # Get WikiArt dump
-wget -c http://web.fsktm.um.edu.my/~cschan/source/ICIP2017/wikiart.zip 
+wget -c http://web.fsktm.um.edu.my/~cschan/source/ICIP2017/wikiart.zip --no-verbose
 unzip wikiart.zip
 
 # Get WikiArt .csv
 cd wikiart
-wget -c http://web.fsktm.um.edu.my/~cschan/source/ICIP2017/wikiart_csv.zip
+wget -c http://web.fsktm.um.edu.my/~cschan/source/ICIP2017/wikiart_csv.zip --no-verbose
 unzip wikiart_csv.zip
 
 # Prepare train
