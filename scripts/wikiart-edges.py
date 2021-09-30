@@ -15,7 +15,7 @@ def CannyThreshold(filename, low_threshold=75, upper_threshold=250):
     edges = cv2.Canny(img_blur, low_threshold, upper_threshold)
     # ret, thresh = cv2.threshold(edges, 200, 255, cv2.THRESH_BINARY)
     # at last, swap blacks and whites
-    return np.where(edges != 0, 0, 255)
+    return cv2.bitwise_not(edges)
 
 def procesDir(src, dst, verbose):
     dst = os.path.join(os.getcwd(), dst)
@@ -28,9 +28,9 @@ def procesDir(src, dst, verbose):
             
             try:
                 # Try applying edge detection algo
-                edge = CannyThreshold(fullpath)
+                edges = CannyThreshold(fullpath)
                 # Write new image
-                cv2.imwrite(os.path.join(dst, filename), edge)
+                cv2.imwrite(os.path.join(dst, filename), edges)
             except:
                 if verbose: print("Failed to process image")
                 break
