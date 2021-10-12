@@ -27,7 +27,6 @@ python ../scripts/wikiart-edges.py -s wikiart/val -d wikiart_edges/val
 find $(pwd)/wikiart/train -name "*.jpg" > wikiart_train.txt
 find $(pwd)/wikiart/test -name "*.jpg" > wikiart_test.txt
 find $(pwd)/wikiart/val -name "*.jpg" > wikiart_val.txt
-
 find $(pwd)/wikiart_edges/train -name "*.jpg" > wikiart_edges_train.txt
 find $(pwd)/wikiart_edges/test -name "*.jpg" > wikiart_edges_test.txt
 find $(pwd)/wikiart_edges/val -name "*.jpg" > wikiart_edges_val.txt
