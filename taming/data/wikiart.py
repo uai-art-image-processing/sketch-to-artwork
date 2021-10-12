@@ -4,6 +4,7 @@ import albumentations
 from torch.utils.data import Dataset
 from PIL import Image
 from cv2.cv2 import Canny
+from omegaconf import OmegaConf
 
 from taming.data.base import ImagePaths
 
@@ -28,21 +29,23 @@ from taming.data.base import ImagePaths
 #     def __getitem__(self, i):
 #         example = self.data[i]
 #         return example
-
+    
 class WikiartBase(Dataset):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, config=None):
         super().__init__()
+        self.config = config or OmegaConf.create()
+        if not type(self.config)==dict:
+            self.config = OmegaConf.to_container(self.config)
         self.data = None
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, i):
-        example = self.data[i]
-        return example
+        return self.data[i]
 
 class WikiartTrain(WikiartBase):
-    def __init__(self, size, training_images_list_file="data/wikiart_train.txt"):
+    def __init__(self, size=128, training_images_list_file="datasets/wikiart_train.txt"):
         super().__init__()
         with open(training_images_list_file, "r") as f:
             paths = f.read().splitlines()
@@ -50,11 +53,26 @@ class WikiartTrain(WikiartBase):
 
 
 class WikiartTest(WikiartBase):
-    def __init__(self, size, test_images_list_file="data/wikiart_test.txt"):
+    def __init__(self, size=128, test_images_list_file="datasets/wikiart_test.txt"):
         super().__init__()
         with open(test_images_list_file, "r") as f:
             paths = f.read().splitlines()
         self.data = ImagePaths(paths=paths, size=size, random_crop=False)
+
+# class WikiartTrain(WikiartBase):
+#     def __init__(self, size, training_images_list_file="data/wikiart_train.txt"):
+#         super().__init__()
+#         with open(training_images_list_file, "r") as f:
+#             paths = f.read().splitlines()
+#         self.data = ImagePaths(paths=paths, size=size, random_crop=False)
+
+
+# class WikiartTest(WikiartBase):
+#     def __init__(self, size, test_images_list_file="data/wikiart_test.txt"):
+#         super().__init__()
+#         with open(test_images_list_file, "r") as f:
+#             paths = f.read().splitlines()
+#         self.data = ImagePaths(paths=paths, size=size, random_crop=False)
         
 
 def imscale(x, factor, keepshapes=False, keepmode="bicubic"):
@@ -155,19 +173,34 @@ class WikiartScaleTrain(WikiartScale):
         super().__init__(random_crop=random_crop, **kwargs)
 
     def get_base(self):
-        return WikiartTrain()
+        return WikiartBase()
 
 class WikiartScaleValidation(WikiartScale):
     def get_base(self):
-        return WikiartTest()
+        return WikiartBase()
 
 from skimage.feature import canny
 from skimage.color import rgb2gray
 
+def rgba_to_edge(x):
+    assert x.dtype == np.uint8
+    assert len(x.shape) == 3 and x.shape[2] == 4
+    y = x.copy()
+    y.dtype = np.float32
+    y = y.reshape(x.shape[:2])
+    return np.invert(np.ascontiguousarray(y))
+
 class WikiartEdges(WikiartScale):
     def __init__(self, up_factor=1, **kwargs):
         super().__init__(up_factor=1, **kwargs)
-
+        
+    def preprocess_edge(self, path):
+        rgba = np.array(Image.open(path))
+        edge = rgba_to_edge(rgba)
+        edge = (edge - edge.min())/max(1e-8, edge.max()-edge.min())
+        edge = 2.0*edge-1.0
+        return edge
+        
     def __getitem__(self, i):
         example = self.base[i]
         image = example["image"]
@@ -179,12 +212,13 @@ class WikiartEdges(WikiartScale):
         lr = canny(rgb2gray(image), sigma=2)
         lr = lr.astype(np.float32)
         lr = lr[:,:,None][:,:,[0,0,0]]
+        lr = self.preprocess_edge(lr)
 
         out = self.preprocessor(image=image, lr=lr)
         example["image"] = out["image"]
         example["lr"] = out["lr"]
 
-        return example
+        return example  
 
 class WikiartEdgesTrain(WikiartEdges):
     def __init__(self, random_crop=True, **kwargs):

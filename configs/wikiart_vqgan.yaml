@@ -40,4 +40,3 @@ data:
       params:
         test_images_list_file: datasets/wikiart_test.txt
         size: 128
-
