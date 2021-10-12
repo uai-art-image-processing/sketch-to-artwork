@@ -33,11 +33,11 @@ data:
     train:
       target: taming.data.wikiart.WikiartTrain
       params:
-        training_images_list_file: data/wikiart_train.txt
+        training_images_list_file: datasets/wikiart_train.txt
         size: 128
     validation:
       target: taming.data.wikiart.WikiartTest
       params:
-        test_images_list_file: data/wikiart_test.txt
+        test_images_list_file: datasets/wikiart_test.txt
         size: 128
 
