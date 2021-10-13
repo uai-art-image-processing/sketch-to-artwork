@@ -6,15 +6,15 @@ model:
     transformer_config:
       target: taming.modules.transformer.mingpt.GPT
       params:
-        vocab_size: 1024
+        vocab_size: 512
         block_size: 512
         n_layer: 24
         n_head: 16
-        n_embd: 1024
+        n_embd: 512
     first_stage_config:
       target: taming.models.vqgan.VQModel
       params:
-        ckpt_path: # logs/.../checkpoints/last.ckpt
+        ckpt_path: logs/2021-10-13T02-04-07_wikiart_vqgan/checkpoints/last.ckpt
         embed_dim: 256
         n_embed: 512
         ddconfig:
@@ -33,7 +33,7 @@ model:
     cond_stage_config:
       target: taming.models.vqgan.VQModel
       params:
-        ckpt_path: # logs/.../checkpoints/last.ckpt
+        ckpt_path: logs/2021-10-12T23-52-08_wikiart_edges_vqgan/checkpoints/last.ckpt
         embed_dim: 256
         n_embed: 512
         ddconfig:
@@ -57,10 +57,6 @@ data:
     num_workers: 8
     train:
       target: taming.data.wikiart.WikiartEdgesTrain
-      params:
-        size: 128
     validation:
       target: taming.data.wikiart.WikiartEdgesTest
-      params:
-        size: 128
-        
+      

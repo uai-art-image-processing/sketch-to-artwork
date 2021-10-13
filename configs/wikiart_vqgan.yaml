@@ -4,6 +4,7 @@ model:
   params:
     embed_dim: 256
     n_embed: 512
+    image_key: image
     ddconfig:
       double_z: False
       z_channels: 128
@@ -31,12 +32,6 @@ data:
     batch_size: 12
     num_workers: 24
     train:
-      target: taming.data.wikiart.WikiartTrain
-      params:
-        training_images_list_file: datasets/wikiart_train.txt
-        size: 128
+      target: taming.data.wikiart.WikiartEdgesTrain
     validation:
-      target: taming.data.wikiart.WikiartTest
-      params:
-        test_images_list_file: datasets/wikiart_test.txt
-        size: 128
+      target: taming.data.wikiart.WikiartEdgesTrain

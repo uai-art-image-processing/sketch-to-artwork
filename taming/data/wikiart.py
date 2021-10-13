@@ -194,12 +194,11 @@ class WikiartEdges(WikiartScale):
     def __init__(self, up_factor=1, **kwargs):
         super().__init__(up_factor=1, **kwargs)
         
-    def preprocess_edge(self, path):
-        rgba = np.array(Image.open(path))
-        edge = rgba_to_edge(rgba)
-        edge = (edge - edge.min())/max(1e-8, edge.max()-edge.min())
-        edge = 2.0*edge-1.0
-        return edge
+#     def preprocess_edge(self, rgb):
+#         edge = rgb_to_edge(rgba)
+#         edge = (edge - edge.min())/max(1e-8, edge.max()-edge.min())
+#         edge = 2.0*edge-1.0
+#         return edge
         
     def __getitem__(self, i):
         example = self.base[i]
@@ -210,9 +209,9 @@ class WikiartEdges(WikiartScale):
             image = self.rescaler(image=image)["image"]
 
         lr = canny(rgb2gray(image), sigma=2)
-        lr = lr.astype(np.float32)
-        lr = lr[:,:,None][:,:,[0,0,0]]
-        lr = self.preprocess_edge(lr)
+        lr = 1.0 - lr.astype(np.float32)
+        # lr = np.invert(lr)
+        # lr = self.preprocess_edge(lr)
 
         out = self.preprocessor(image=image, lr=lr)
         example["image"] = out["image"]
