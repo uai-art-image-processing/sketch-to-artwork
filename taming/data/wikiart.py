@@ -188,7 +188,8 @@ def rgba_to_edge(x):
     y = x.copy()
     y.dtype = np.float32
     y = y.reshape(x.shape[:2])
-    return np.invert(np.ascontiguousarray(y))
+    y = np.invert(y)
+    return np.ascontiguousarray(y)
 
 class WikiartEdges(WikiartScale):
     def __init__(self, up_factor=1, **kwargs):
@@ -210,8 +211,7 @@ class WikiartEdges(WikiartScale):
 
         lr = canny(rgb2gray(image), sigma=2)
         lr = 1.0 - lr.astype(np.float32)
-        # lr = np.invert(lr)
-        # lr = self.preprocess_edge(lr)
+        # lr = lr[:,:,None][:,:,[0,0,0]]
 
         out = self.preprocessor(image=image, lr=lr)
         example["image"] = out["image"]

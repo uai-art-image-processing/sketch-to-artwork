@@ -78,6 +78,9 @@ class Net2NetTransformer(pl.LightningModule):
             self.cond_stage_model = model
 
     def forward(self, x, c):
+        # print(x.shape, c.shape)
+        # c = torch.reshape(c, x.shape)
+        
         # one step to produce the logits
         _, z_indices = self.encode_to_z(x)
         _, c_indices = self.encode_to_c(c)
@@ -91,6 +94,10 @@ class Net2NetTransformer(pl.LightningModule):
         else:
             a_indices = z_indices
 
+#         print("\n", c_indices.shape, a_indices.shape)
+#         c_indices = torch.reshape(c_indices, (2,64))
+#         # a_indices = torch.reshape(a_indices, c_indices.shape)
+#         print("\n", c_indices.shape, a_indices.shape)
         cz_indices = torch.cat((c_indices, a_indices), dim=1)
 
         # target includes all sequence elements (no need to handle first one
@@ -174,11 +181,14 @@ class Net2NetTransformer(pl.LightningModule):
 
     @torch.no_grad()
     def encode_to_c(self, c):
-        if self.downsample_cond_size > -1:
-            c = F.interpolate(c, size=(self.downsample_cond_size, self.downsample_cond_size))
-        quant_c, _, [_,_,indices] = self.cond_stage_model.encode(c)
-        if len(indices.shape) > 2:
-            indices = indices.view(c.shape[0], -1)
+#         if self.downsample_cond_size > -1:
+#             c = F.interpolate(c, size=(self.downsample_cond_size, self.downsample_cond_size))
+#         quant_c, _, [_,_,indices] = self.cond_stage_model.encode(c)
+#         if len(indices.shape) > 2:
+#             indices = indices.view(c.shape[0], -1)
+        quant_c, _, info = self.cond_stage_model.encode(c)
+        indices = info[2].view(quant_c.shape[0], -1)
+        indices = self.permuter(indices)
         return quant_c, indices
 
     @torch.no_grad()
