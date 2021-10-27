@@ -11,8 +11,8 @@ from check_integrity import verifyImg
 CWD = os.getcwd()
 
 # SRC_PATH=""
-FILE="genre"
-COND="portrait"
+FILE="style"
+COND="Impressionism"
 
 train_ratio = 0.85
 test_ratio = 0.10

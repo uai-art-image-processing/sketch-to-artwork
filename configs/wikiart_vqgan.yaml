@@ -29,9 +29,14 @@ model:
 data:
   target: main.DataModuleFromConfig
   params:
-    batch_size: 12
-    num_workers: 24
+    batch_size: 8
+    num_workers: 8
     train:
       target: taming.data.wikiart.WikiartEdgesTrain
+      params:
+        img_list_file: datasets/wikiart_train.txt
+        size: 256
     validation:
       target: taming.data.wikiart.WikiartEdgesTest
+      img_list_file: datasets/wikiart_test.txt
+        size: 256

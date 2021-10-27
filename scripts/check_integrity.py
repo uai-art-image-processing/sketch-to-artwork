@@ -10,10 +10,10 @@ def verifyImg(path, verbose=False):
         img = Image.open(path) 
         img.transpose(Image.FLIP_LEFT_RIGHT)
         img.close()
-        print("ok")
+        if verbose: print("ok")
         return True
     except:
-        print("failed")
+        if verbose: print("failed")
         return False
 
 def verifyDir(path, verbose=False):
