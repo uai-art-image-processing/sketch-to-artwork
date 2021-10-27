@@ -38,5 +38,6 @@ data:
         size: 256
     validation:
       target: taming.data.wikiart.WikiartEdgesTest
-      img_list_file: datasets/wikiart_test.txt
+      params:
+        img_list_file: datasets/wikiart_test.txt
         size: 256

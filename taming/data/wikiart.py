@@ -206,12 +206,12 @@ class WikiartEdges(WikiartScale):
 #         edge = 2.0*edge-1.0
 #         return edge
 
-    def get_edge(image, sigma=2, low_threshold=0.1, high_threshold=0.2):
-        # Edge preprocessing
-        out = canny(rgb2gray(image), sigma, low_threshold, high_threshold)
-        out = 1.0 - out.astype(np.float32)
-        # lr = lr[:,:,None][:,:,[0,0,0]]
-        return out
+#     def get_edge(image, sigma=2, low_threshold=0.1, high_threshold=0.2):
+#         # Edge preprocessing
+#         out = canny(rgb2gray(image), sigma, low_threshold, high_threshold)
+#         out = 1.0 - out.astype(np.float32)
+#         # lr = lr[:,:,None][:,:,[0,0,0]]
+#         return out
         
     def __getitem__(self, i):
         example = self.base[i]
@@ -220,7 +220,9 @@ class WikiartEdges(WikiartScale):
         if self.crop_size and min(h,w) < self.crop_size:
             # have to upscale to be able to crop - this just uses bilinear
             image = self.rescaler(image=image)["image"]
-        lr = self.get_edge(image, 3, 0.25, 0.75)
+        # lr = self.get_edge(image, 3, 0.25, 0.75)
+        lr = canny(rgb2gray(image), 3, 0.25, 0.75)
+        lr = 1.0 - lr.astype(np.float32)
 
         out = self.preprocessor(image=image, lr=lr)
         example["image"] = out["image"]
@@ -230,21 +232,21 @@ class WikiartEdges(WikiartScale):
 
 class WikiartEdgesTrain(WikiartEdges):
     def __init__(self, size, img_list_file, random_crop=True, x_flip=True, **kwargs):
-        super().__init__(random_crop=random_crop, x_flip=x_flip, **kwargs)
         self.size = size
         self.img_list_file = img_list_file
+        super().__init__(random_crop=random_crop, x_flip=x_flip, **kwargs)
 
     def get_base(self):
-        return WikiartTrain({"size": self.size, "img_list_file": self.img_list_file})
+        return WikiartTrain()
 
 class WikiartEdgesTest(WikiartEdges):
     def __init__(self, size, img_list_file, **kwargs):
-        super().__init__(**kwargs)
         self.size = size
         self.img_list_file = img_list_file
+        super().__init__(**kwargs)
 
-    def get_base(self, size):
-        return WikiartTest({"size": self.size, "img_list_file:": self.img_list_file})
+    def get_base(self):
+        return WikiartTest()
 
 # class EdgePaths(ImagePaths):
 #     def __init__(self, **kwargs):

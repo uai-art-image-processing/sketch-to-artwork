@@ -34,7 +34,7 @@ if __name__ == "__main__":
     file_val = clean(f"{FILE}_val.csv")
     dataset = pd.concat([file_train, file_val])
     
-    dataset[dataset.path.apply(lambda path: verifyImg(os.path.join(CWD, path))).values]
+    # dataset[dataset.path.apply(lambda path: verifyImg(os.path.join(CWD, path))).values]
 
     # Choose custome category if given
     if COND != None:
