@@ -14,7 +14,7 @@ model:
     first_stage_config:
       target: taming.models.vqgan.VQModel
       params:
-        ckpt_path: 
+        ckpt_path: logs/2021-10-27T15-47-57_wikiart_vqgan/checkpoints/last.ckpt
         embed_dim: 256
         n_embed: 1024
         image_key: image
@@ -34,7 +34,7 @@ model:
     cond_stage_config:
       target: taming.models.vqgan.VQModel
       params:
-        ckpt_path: 
+        ckpt_path: logs/2021-10-28T03-10-36_wikiart_edges_vqgan/checkpoints/last.ckpt
         embed_dim: 256
         n_embed: 1024
         ddconfig:
@@ -54,7 +54,7 @@ model:
 data:
   target: main.DataModuleFromConfig
   params:
-    batch_size: 4
+    batch_size: 2
     num_workers: 8
     train:
       target: taming.data.wikiart.WikiartEdgesTrain

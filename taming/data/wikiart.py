@@ -221,7 +221,7 @@ class WikiartEdges(WikiartScale):
             # have to upscale to be able to crop - this just uses bilinear
             image = self.rescaler(image=image)["image"]
         # lr = self.get_edge(image, 3, 0.25, 0.75)
-        lr = canny(rgb2gray(image), 3, 0.25, 0.75)
+        lr = canny(rgb2gray(image), 2)
         lr = 1.0 - lr.astype(np.float32)
 
         out = self.preprocessor(image=image, lr=lr)
