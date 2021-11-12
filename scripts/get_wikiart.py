@@ -31,10 +31,6 @@ def mergeCSV(data_dir):
 
 def main(args):
     # Get cleaned dataframes and merge them
-    # file_train = clean(f"{FILE}_train.csv")
-    # file_val = clean(f"{FILE}_val.csv")
-    # dataset = pd.concat([file_train, file_val])
-
     dataset = mergeCSV(args.datadir)
 
     if args.genres != None:
@@ -43,8 +39,6 @@ def main(args):
         dataset = dataset[dataset["style"].isin(args.styles)]
     if args.artists != None:
         dataset = dataset[dataset["artist"].isin(args.artists)]
-    
-    # dataset[dataset.path.apply(lambda path: verifyImg(os.path.join(CWD, path))).values]
 
     # Choose custome category if given
     train, test = train_test_split(dataset["path"].values, test_size=1-args.train)

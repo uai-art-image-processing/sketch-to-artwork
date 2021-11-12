@@ -3,32 +3,10 @@ import numpy as np
 import albumentations
 from torch.utils.data import Dataset
 from PIL import Image
-from cv2.cv2 import Canny
+from cv2.cv2 import Canny, GaussianBlur
 from omegaconf import OmegaConf
 
 from taming.data.base import ImagePaths
-
-# def rgba_to_edge(x):
-#     assert x.dtype == np.uint8
-#     assert len(x.shape) == 3 and x.shape[2] == 4
-#     y = x.copy()
-#     y.dtype = np.float32
-#     y = y.reshape(x.shape[:2])
-#     return np.ascontiguousarray(y)
-
-# class Wikiart(Dataset):
-#     def __init__(self, size, images_list_file, *args, **kwargs):
-#         super().__init__()
-#         with open(images_list_file, "r") as f:
-#             paths = f.read().splitlines()
-#         self.data = ImagePaths(paths=paths, size=size, random_crop=False)
-
-#     def __len__(self):
-#         return len(self.data)
-
-#     def __getitem__(self, i):
-#         example = self.data[i]
-#         return example
     
 class WikiartBase(Dataset):
     def __init__(self, config=None):
@@ -58,23 +36,7 @@ class WikiartTest(WikiartBase):
         with open(img_list_file, "r") as f:
             paths = f.read().splitlines()
         self.data = ImagePaths(paths=paths, size=size, random_crop=False)
-
-# class WikiartTrain(WikiartBase):
-#     def __init__(self, size, training_images_list_file="data/wikiart_train.txt"):
-#         super().__init__()
-#         with open(training_images_list_file, "r") as f:
-#             paths = f.read().splitlines()
-#         self.data = ImagePaths(paths=paths, size=size, random_crop=False)
-
-
-# class WikiartTest(WikiartBase):
-#     def __init__(self, size, test_images_list_file="data/wikiart_test.txt"):
-#         super().__init__()
-#         with open(test_images_list_file, "r") as f:
-#             paths = f.read().splitlines()
-#         self.data = ImagePaths(paths=paths, size=size, random_crop=False)
         
-
 def imscale(x, factor, keepshapes=False, keepmode="bicubic"):
     if factor is None or factor==1:
         return x
@@ -186,6 +148,7 @@ class WikiartScaleValidation(WikiartScale):
 
 from skimage.feature import canny
 from skimage.color import rgb2gray
+from scipy import ndimage as ndi
 
 def rgba_to_edge(x):
     assert x.dtype == np.uint8
@@ -200,19 +163,6 @@ class WikiartEdges(WikiartScale):
     def __init__(self, up_factor=1, **kwargs):
         super().__init__(up_factor=1, **kwargs)
         
-#     def preprocess_edge(self, rgb):
-#         edge = rgb_to_edge(rgba)
-#         edge = (edge - edge.min())/max(1e-8, edge.max()-edge.min())
-#         edge = 2.0*edge-1.0
-#         return edge
-
-#     def get_edge(image, sigma=2, low_threshold=0.1, high_threshold=0.2):
-#         # Edge preprocessing
-#         out = canny(rgb2gray(image), sigma, low_threshold, high_threshold)
-#         out = 1.0 - out.astype(np.float32)
-#         # lr = lr[:,:,None][:,:,[0,0,0]]
-#         return out
-        
     def __getitem__(self, i):
         example = self.base[i]
         image = example["image"]
@@ -220,8 +170,8 @@ class WikiartEdges(WikiartScale):
         if self.crop_size and min(h,w) < self.crop_size:
             # have to upscale to be able to crop - this just uses bilinear
             image = self.rescaler(image=image)["image"]
-        # lr = self.get_edge(image, 3, 0.25, 0.75)
-        lr = canny(rgb2gray(image), 2)
+
+        lr = canny(rgb2gray(image), 1.75, 0.15, 0.75)
         lr = 1.0 - lr.astype(np.float32)
 
         out = self.preprocessor(image=image, lr=lr)
@@ -247,102 +197,4 @@ class WikiartEdgesTest(WikiartEdges):
 
     def get_base(self):
         return WikiartTest()
-
-# class EdgePaths(ImagePaths):
-#     def __init__(self, **kwargs):
-#         super().__init__(**kwargs)
-        
-#     def preprocess_image(self, image_path):
-#         image = Image.open(image_path)
-#         if not image.mode == "L":
-#             image = image.convert("L")
-#         image = np.array(image).astype(np.uint8)
-#         image = self.preprocessor(image=image)["image"]
-#         image = (image/127.5 - 1.0).astype(np.float32)
-#         return image
-
-# class BaseWithDepth(Dataset):
-#     DEFAULT_DEPTH_ROOT="data/wikiart_edges"
-
-#     def __init__(self, config=None, size=None, random_crop=False,
-#                  crop_size=None, root=None, split="train"):
-#         self.config = config
-#         self.base_dset = self.get_base_dset()
-#         self.preprocessor = get_preprocessor(
-#             size=size,
-#             crop_size=crop_size,
-#             random_crop=random_crop,
-#             additional_targets={"edge": "image"})
-#         self.crop_size = crop_size
-#         if self.crop_size is not None:
-#             self.rescaler = albumentations.Compose(
-#                 [albumentations.SmallestMaxSize(max_size = self.crop_size)],
-#                 additional_targets={"edge": "image"})
-#         if root is not None:
-#             self.DEFAULT_DEPTH_ROOT = root
-#         self.split = split
-
-#     def __len__(self):
-#         return len(self.base_dset)
-
-#     def preprocess_edge(self, path):
-#         img = cv2.imdecode(np.fromfile(path, dtype=np.uint8), 
-#                     cv2.IMREAD_UNCHANGED)
-#         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-#         img = cv2.GaussianBlur(img, (5,5), 0)
-#         edge = cv2.Canny(img, 75, 250)
-#         return cv2.bitwise_not(edge)
-
-#     def __getitem__(self, i):
-#         e = self.base_dset[i]
-#         e["edge"] = self.preprocess_edge(self.get_depth_path(e))
-#         # up if necessary
-#         h,w,c = e["image"].shape
-#         if self.crop_size and min(h,w) < self.crop_size:
-#             # have to upscale to be able to crop - this just uses bilinear
-#             out = self.rescaler(image=e["image"], depth=e["edge"])
-#             e["image"] = out["image"]
-#             e["edge"] = out["edge"]
-#         transformed = self.preprocessor(image=e["image"], depth=e["edge"])
-#         e["image"] = transformed["image"]
-#         e["edge"] = transformed["edge"]
-#         return e
-
-#     def get_base_dset(self):
-#         return Wikiart()
-
-#     def get_depth_path(self, e):
-#         fid = os.path.splitext(e["relpath"])[0]+".jpg"
-#         fid = os.path.join(self.DEFAULT_DEPTH_ROOT, self.split, fid)
-#         return fid
-
-
-# class WikiartTrainWithDepth(BaseWithDepth):
-#     # default to random_crop=True
-#     def __init__(self, random_crop=True, sub_indices=None, **kwargs):
-#         self.sub_indices = sub_indices
-#         super().__init__(random_crop=random_crop, **kwargs)
-
-#     def get_base_dset(self):
-#         return Wikiart()
-
-#     def get_depth_path(self, e):
-#         fid = os.path.splitext(e["relpath"])[0]+".png"
-#         fid = os.path.join(self.DEFAULT_DEPTH_ROOT, "train", fid)
-#         return fid
-
-# class WikiartTestWithDepth(BaseWithDepth):
-#     def __init__(self, sub_indices=None, **kwargs):
-#         self.sub_indices = sub_indices
-#         super().__init__(**kwargs)
-
-#     def get_base_dset(self):
-#         if self.sub_indices is None:
-#             return WikiartTest()
-#         else:
-#             return WikiartTest({"sub_indices": self.sub_indices})
-
-#     def get_depth_path(self, e):
-#         fid = os.path.splitext(e["relpath"])[0]+".png"
-#         fid = os.path.join(self.DEFAULT_DEPTH_ROOT, "val", fid)
-#         return fid
+    
