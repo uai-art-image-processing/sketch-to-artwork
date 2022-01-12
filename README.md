@@ -1,6 +1,15 @@
 # Artwork generation based on Sketches
 
-Implementation of VQ-GAN architecture and transformers for Image-to-Image Translation (Edge-to-Artwork)
+Implementation of [VQ-GAN](#acknowledgement) architecture for Image-to-Image Translation (Edge-to-Artwork).
+
+![100_samples_150x150px](resources/100_samples_150x150px.png)
+> Artificially generated landscapes
+
+![validation](resources/validation.png)
+> (From top to bottom) Artwork reference, Extracted Edges (Input) and the Generated Images (output). 255x255 pixels
+
+![highres](resources/highres.png)
+> Generated landscape with a 680x480 hand drawn image.
 
 ## Prerequisites
 
@@ -24,7 +33,7 @@ Coming Soon
 
 ## Training
 
-For Edge-to-Image Translation, we need first to train two VQ-GANs: one VQ-GAN for the edge images and another for the actual images/artworks. After training both autoencoders, we train a transformer usin both pretrained models checkpoints. The edge extraction in this implementation occurs mid training so there is no need for an edge dataset (See `taming/data/wikiart.py`).
+For Edge-to-Image Translation, we need first to train two VQ-GANs: one VQ-GAN for the edge images and another for the actual images/artworks. After training both autoencoders, we train a transformer using both pretrained models checkpoints. The edge extraction in this implementation occurs mid training so there is no need for an edge dataset (See `taming/data/wikiart.py`).
 
 
 The training  process should look like this:
@@ -89,7 +98,7 @@ Replace `<gpus>` with ` 0,` (with a trailing comma) to train on a single GPU. `0
 2. Create 2 text files, a `<dataset>_train.txt` and `<dataset>_test.txt` that point to the files in your training and test set respectively (for example `find $(pwd)/<dataset>/train -name "*.jpg" > <dataset>_train.txt`).
 3. Create a new config file based on `configs/custom_vqgan.yaml` to point to these 2 files. 
 
-## Acknowledgement
+## Acknowledgments
 
   - Thanks to [Patrick Esser, Robin Rombach, Björn Ommer](https://github.com/CompVis) for the VQ-GAN architecture
     - [Github](https://github.com/CompVis/taming-transformers)
