@@ -14,7 +14,7 @@ model:
     first_stage_config:
       target: taming.models.vqgan.VQModel
       params:
-        ckpt_path: logs/2021-11-11T16-36-49_wikiart_portrait_realism_vqgan/checkpoints/last.ckpt
+        ckpt_path: # logs/<wikiart_vqgan>/checkpoints/last.ckpt
         embed_dim: 256
         n_embed: 1024
         image_key: image
@@ -34,7 +34,7 @@ model:
     cond_stage_config:
       target: taming.models.vqgan.VQModel
       params:
-        ckpt_path: logs/2021-11-11T22-39-00_wikiart_landscape_realism_edge_vqgan/checkpoints/last.ckpt
+        ckpt_path: # logs/<edge_vqgan>/checkpoints/last.ckpt
         embed_dim: 256
         n_embed: 1024
         ddconfig:
