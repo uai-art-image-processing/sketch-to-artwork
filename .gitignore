@@ -1,6 +1,7 @@
 ## Other
 datasets/
 logs/
+.vscode
 
 ## Python .gitignore
 # Byte-compiled / optimized / DLL files
